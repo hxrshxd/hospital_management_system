@@ -46,7 +46,7 @@ public class PatientController {
     }
     
     // get list of patient whose age is greater than given parameter
-    @GetMapping("getPatientGreaterThanAge")
+    @GetMapping("/getPatientGreaterThanAge")
     public List<Patient> getPatientGreaterThanAge(@RequestParam("age")Integer age) {
         List<Patient> patientList = new ArrayList<>();
         for (Patient p : patientDb.values()) {
@@ -54,4 +54,43 @@ public class PatientController {
         }
         return patientList;
     }
+
+    @GetMapping("/getPatientViaPathVariable/{patientId}")
+    public Patient getPatientViaPathVariable(@PathVariable("patientId") Integer patientId) {
+         return patientDb.get(patientId);
+    }
+
+    @GetMapping("/getPatientGreaterThanAgeAndDisease/{age}/{disease}")
+    public List<Patient> getPatientGreaterThanAgeAndDisease(@PathVariable("age")Integer age, @PathVariable("disease")String disease) {
+        List<Patient> patientList = new ArrayList<>();
+
+        for (Patient p: patientDb.values()) {
+            if(p.getAge() > age && p.getDisease().equals(disease)) {
+                patientList.add(p);
+            }
+        }
+
+        return patientList;
+    }
+
+    @PutMapping("/updatePatient")
+    public String updatePatient(@RequestBody Patient patient) {
+        int key = patient.getPatientId();
+        patientDb.put(key, patient);
+        return "Update complete";
+    }
+
+    @PutMapping("updatePatientDisease")
+    public String updatePatientDisease(@RequestParam("patientId")Integer patientId, @RequestParam("disease")String disease) {
+        Patient p = patientDb.get(patientId);
+        p.setDisease(disease);
+        return "update complete";
+    }
+
+    @DeleteMapping("deletePatient")
+    public String deletePatient(@RequestParam("patientId")Integer patientId) {
+        patientDb.remove(patientId);
+        return "deleted patient";
+    }
+
 }
